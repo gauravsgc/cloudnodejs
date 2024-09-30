@@ -1,9 +1,11 @@
 import express from 'express'
+import dotenv from 'dotenv';
 const app = express()
+dotenv.config();
 import connectDB from './config/Connection.js';
-connectDB(`mongodb://localhost:27017`);
+connectDB(process.env.DATABASE_URL);
 app.get('/', function (req, res) {
   res.send('Hello World goodmorning everyone')
 })
 
-app.listen(3000)
+app.listen(process.env.PORT);
