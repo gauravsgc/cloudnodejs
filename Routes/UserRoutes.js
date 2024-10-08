@@ -2,10 +2,11 @@
 import express from 'express';
 const router=express.Router();
 import UserController from '../Controllers/UserController.js';
-// router.post('/',UserController.userRegistration);
+import checkUserAuth from '../Middleware/auth_middleware.js';
+router.post('/',UserController.userRegistration);
 router.get('/',UserController.userfetch);
 router.put('/',UserController.userupdate);
-router.delete('/',UserController.userDelete);
+router.delete('/',checkUserAuth,UserController.userDelete);
 
 router.post('/login',UserController.userLogin);
 export default router;

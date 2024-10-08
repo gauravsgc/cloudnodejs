@@ -2,6 +2,7 @@
 //  They perform tasks like querying the database, processing data, and returning responses to the client.
 import userModel from "../Models/User.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 export default class UserController{
     static userRegistration=async(req,res)=>{
 // console.log(req.body);
@@ -17,7 +18,19 @@ const document=new userModel({
 })
 await document.save();//wait untill the data not saved
 // console.log('data saved into the database');
-res.status(201).send({status:'SUCCESS',message:'data registerd successfully'});
+/*jwt token*/
+
+const saved_user=await userModel.findOne({username:username});
+const token=jwt.sign({userID:saved_user._id},process.env.JWT_SECRET_KEY,{expiresIn:'5d'});//created a token which will expire in 5 day..
+
+// set it to the cookie
+
+// console.log(saved_user);
+
+
+/*end of jwt token code*/
+
+res.status(201).send({status:'SUCCESS',message:'data registerd successfully',"token":token});
 
 // console.log(username);
 // console.log(hashpassword);
@@ -84,7 +97,8 @@ const user=await userModel.findOne({username:username});
 if(user!=null){
 const ismatchespass=await bcrypt.compare(userpass,user.userpass);
 if(user.username===username &&ismatchespass){
-res.status(200).send({status:true,message:'user succefully login'});
+    const token=jwt.sign({userID:user._id},process.env.JWT_SECRET_KEY,{expiresIn:'5d'});
+res.status(200).send({status:true,message:'user succefully login',"token":token});
 }
 else{
     res.status(401).send({status:'failed',message:'username or password not match'});   
